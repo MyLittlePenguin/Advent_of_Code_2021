@@ -2001,13 +2001,9 @@ val input = listOf(
     6110
 )
 
-fun List<Int>.incCounter() : Int {
+fun List<Int>.incCounter(): Int {
     var prev = -1
-    return this.groupingBy {
-        val result = prev > -1 && prev < it
-        prev = it
-        result
-    }.eachCount()[true]!!
+    return this.map { (if(prev > -1 && prev < it) 1 else 0).apply { prev = it } }.sum()
 }
 
 println(
