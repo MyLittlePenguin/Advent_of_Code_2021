@@ -1,4 +1,4 @@
-val input = arrayOf(
+val input = listOf(
     199,
     227,
     229,
@@ -2001,20 +2001,19 @@ val input = arrayOf(
     6110
 )
 
-var prev = -1
-
-println(
-    input.groupingBy {
+fun List<Int>.incCounter() : Int {
+    var prev = -1
+    return this.groupingBy {
         val result = prev > -1 && prev < it
         prev = it
         result
-    }.eachCount()[true]
+    }.eachCount()[true]!!
+}
+
+println(
+    input.incCounter()
 )
 
 println(
-    input.toList().windowed(3,1).map { it.sum() }.groupingBy {
-        val result = prev > -1 && prev < it
-        prev = it
-        result
-    }.eachCount()[true]
+    input.windowed(3, 1).map { it.sum() }.incCounter()
 )
