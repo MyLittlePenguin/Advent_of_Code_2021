@@ -1,6 +1,8 @@
 import java.io.File
 
-typealias Vec = Pair<Int, Int>
+data class Vec(var first: Int, var second: Int) {
+    operator fun plus(other: Vec) = Vec(this.first + other.first, this.second + other.second)
+}
 
 fun readInstructions(instruction: String): Vec {
     val op = instruction.split(" ").let { Pair<String, Int>(it.first(), it[1].toInt()) }
@@ -12,27 +14,15 @@ fun readInstructions(instruction: String): Vec {
     }
 }
 
-operator fun Vec.plus(other: Vec) = Vec(this.first + other.first, this.second + other.second)
-
-fun calcNewPosProduct(input: List<String>) =
-    input.map { readInstructions(it) }.reduce { acc: Vec?, unit ->
-        if(acc == null) unit else acc + unit
-    }.let { it.first * it.second }
+inline fun calcNewPosProduct(input: List<String>, mapper: (Vec) -> Vec = { it }) =
+    input.map { readInstructions(it) }.map(mapper).reduce { acc, unit -> acc + unit }.let { it.first * it.second }
 
 fun calcNewPosProduct2(input: List<String>): Int {
     var aim = 0
-    var acc = Vec(0, 0)
-    
-    input.map { readInstructions(it) }.forEach {
-        if(it.first == 0)
-            aim += it.second
-        else acc = Vec(
-                acc.first + it.first,
-                acc.second + (aim * it.first)
-            )
+    return calcNewPosProduct(input) {
+        aim += it.second
+        Vec(it.first, aim * it.first)
     }
-    
-    return acc.first * acc.second
 }
 
 val input = File("02/input.txt").readLines(Charsets.UTF_8)
