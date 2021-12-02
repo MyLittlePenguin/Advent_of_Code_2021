@@ -2006,9 +2006,7 @@ fun List<Int>.incCounter(): Int {
     return this.map { (if(prev > -1 && prev < it) 1 else 0).apply { prev = it } }.sum()
 }
 
-println(
-    input.incCounter()
-)
+println(input.incCounter())
 
 println(
     input.windowed(3, 1).map { it.sum() }.incCounter()
