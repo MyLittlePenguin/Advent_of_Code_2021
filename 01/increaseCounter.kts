@@ -2001,10 +2001,8 @@ val input = listOf(
     6110
 )
 
-fun List<Int>.incCounter(): Int {
-    var prev = -1
-    return this.map { (if(prev > -1 && prev < it) 1 else 0).apply { prev = it } }.sum()
-}
+fun List<Int>.incCounter() =
+    this.windowed(2, 1).map { if(it[0] < it[1]) 1 else 0 }.sum()
 
 println(input.incCounter())
 
