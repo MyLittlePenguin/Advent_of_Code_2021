@@ -15,11 +15,11 @@ fun List<String>.readInstructions(): List<Vec> = this.map {
 fun List<Vec>.calcNewPosProduct(): Int = this.reduce { acc, unit -> acc + unit }.let { it.distance * it.depth }
 
 fun List<Vec>.calcNewPosProduct2(): Int = this.windowed(2, 1, true) {
-        if(it.size == 2) it[1].aim = it[0].aim + it[1].depth
+        if(it.size == 2) it[1].aim = it[1].depth + if(it[0].aim == 0) it[0].depth else it[0].aim
         it[0].apply { depth = it[0].distance * it[0].aim }
     }.calcNewPosProduct()
 
-val input = java.io.File("02/input.txt").readLines(Charsets.UTF_8).readInstructions()
+val input = java.io.File("02/test_input.txt").readLines(Charsets.UTF_8).readInstructions()
 
 println( input.calcNewPosProduct() )
 println( input.calcNewPosProduct2() )
