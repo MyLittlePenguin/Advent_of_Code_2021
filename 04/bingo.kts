@@ -6,7 +6,7 @@ data class BingoNum(
 )
 
 data class Board(
-    val fields: List<List<BingoNum>>,
+    val fields: Array<Array<BingoNum>>,
     var won: Boolean = false,
     val rowNums: Array<Int> = Array<Int>(5) { 0 },
     val colNums: Array<Int> = Array<Int>(5) { 0 }
@@ -18,11 +18,9 @@ var boards: List<Board> = listOf()
 
 do {
     iter.next()
-    val board: MutableList<List<BingoNum>> = mutableListOf()
+    var board: Array<Array<BingoNum>> = arrayOf()
     repeat(5) {
-        board.add(
-            iter.next().trim().split("  ", " ").map { BingoNum(it.toInt()) }
-        )
+        board += iter.next().trim().split("  ", " ").map { BingoNum(it.toInt()) }.toTypedArray()
     }
     boards += listOf(Board(board))
 } while (iter.hasNext())
@@ -32,15 +30,12 @@ var winningNums: MutableList<Int> = mutableListOf()
 
 for (n in nSeq) {
     for (board in boards) {
-        val fields = board.fields
-        for (row in 0 until fields.size) {
-            for (col in 0 until fields[row].size) {
-                fields[row][col].let {
-                    if(it.num == n) {
-                        board.colNums[col] += 1
-                        board.rowNums[row] += 1
-                        it.marked = true
-                    }
+        board.fields.forEachIndexed { rowNum, row ->
+            row.forEachIndexed { colNum, col ->
+                if(col.num == n) {
+                    board.colNums[colNum] += 1
+                    board.rowNums[rowNum] += 1
+                    col.marked = true
                 }
             }
         }
@@ -51,15 +46,14 @@ for (n in nSeq) {
         }
     }
     boards = boards.filter { !it.won }
+    if(boards.size == 0) break
 }
 
-fun Board.calcResult(winningNum: Int) = this.fields.flatten().map { if(it.marked) 0 else it.num }.sum().let {
-    it * winningNum
-}
+fun Board.calcResult(winningNum: Int) =
+    this.fields.flatten().map { if(it.marked) 0 else it.num }.sum().let { it * winningNum }
 
 val result1 = winningBoards.first().calcResult(winningNums.first())
 val result2 = winningBoards.last().calcResult(winningNums.last())
 
 println(result1)
 println(result2)
-
