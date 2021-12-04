@@ -1,16 +1,9 @@
 val input = java.io.File("04/input.txt").readLines()
 
-data class BingoNum(
-    val num: Int,
-    var marked: Boolean = false
-)
-
-data class Board(
-    val fields: Array<Array<BingoNum>>,
-    var won: Boolean = false,
-    val rowNums: Array<Int> = Array<Int>(5) { 0 },
-    val colNums: Array<Int> = Array<Int>(5) { 0 }
-)
+data class BingoNum(val num: Int, var marked: Boolean = false)
+data class Board(val fields: Array<BingoNum>, var won: Boolean = false) {
+    fun calcResult(winningNum: Int) = this.fields.map { if (it.marked) 0 else it.num }.sum().let { it * winningNum }
+}
 
 val iter = input.iterator()
 val nSeq = iter.next().split(",").map { it.toInt() }
@@ -18,42 +11,36 @@ var boards: List<Board> = listOf()
 
 do {
     iter.next()
-    var board: Array<Array<BingoNum>> = arrayOf()
+    var board: Array<BingoNum> = arrayOf()
     repeat(5) {
-        board += iter.next().trim().split("  ", " ").map { BingoNum(it.toInt()) }.toTypedArray()
+        board += iter.next().trim().split("  ", " ").map { BingoNum(it.toInt()) }
     }
-    boards += listOf(Board(board))
+    boards += Board(board)
 } while (iter.hasNext())
 
-var winningBoards: MutableList<Board> = mutableListOf()
-var winningNums: MutableList<Int> = mutableListOf()
+var result1 = -1
+var result2 = -2
 
 for (n in nSeq) {
     for (board in boards) {
-        board.fields.forEachIndexed { rowNum, row ->
-            row.forEachIndexed { colNum, col ->
-                if(col.num == n) {
-                    board.colNums[colNum] += 1
-                    board.rowNums[rowNum] += 1
-                    col.marked = true
-                }
+        for (field in board.fields) {
+            if (field.num == n) {
+                field.marked = true
+                break
             }
         }
-        if(board.colNums.contains(5) || board.rowNums.contains(5)) {
-            winningBoards.add(board)
-            winningNums.add(n)
+        val indexedFields = board.fields.withIndex()
+        if (indexedFields.groupBy { it.index % 5 }.values.any { col -> col.all { it.value.marked } }
+            || indexedFields.groupBy { it.index / 5 }.values.any { row -> row.all { it.value.marked } }
+        ) {
             board.won = true
+            if(result1 == -1) result1 = board.calcResult(n)
+            else result2 = board.calcResult(n)
         }
     }
     boards = boards.filter { !it.won }
-    if(boards.size == 0) break
+    if (boards.size == 0) break
 }
-
-fun Board.calcResult(winningNum: Int) =
-    this.fields.flatten().map { if(it.marked) 0 else it.num }.sum().let { it * winningNum }
-
-val result1 = winningBoards.first().calcResult(winningNums.first())
-val result2 = winningBoards.last().calcResult(winningNums.last())
 
 println(result1)
 println(result2)
