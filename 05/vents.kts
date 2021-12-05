@@ -11,8 +11,7 @@ data class Line(val begin: Point, val end: Point) {
 
         return when {
             deltaX < 0 && deltaY > 0 -> Line(begin.invX(), end.invX()).toPoints().map { it.invX() }
-            deltaX < 0 -> Line(end, begin).toPoints()
-            deltaY < 0 -> Line(end, begin).toPoints()
+            deltaX < 0 || deltaY < 0 -> Line(end, begin).toPoints()
             deltaX == 0 -> (begin.y..end.y).map { Point(begin.x, it) }
             deltaY == 0 -> (begin.x..end.x).map { Point(it, begin.y) }
             else -> (0..deltaX).map { Point(begin.x + it, begin.y + it) }
