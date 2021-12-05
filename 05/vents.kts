@@ -20,15 +20,11 @@ data class Line(val begin: Point, val end: Point) {
     }
 }
 
-fun List<Line>.calcGrid() = this.flatMap { listOf(it.begin, it.end) }
-    .reduce { acc, it -> Point(max(acc.x, it.x), max(acc.y, it.y)) }
-    .let { point -> Array(point.y + 1) { Array(point.x + 1) { 0 } } }
-    .let { grid -> this.flatMap { it.toPoints() }.forEach { grid[it.y][it.x] += 1 }; grid }
+fun List<Line>.countCrossings() = this.flatMap { it.toPoints() }.groupBy { it }.values.count { it.count() > 1 }
 
 val input = java.io.File("05", "input.txt").readLines()
     .map { it.split(",", " -> ").map { n -> n.toInt() } }
     .map { Line(Point(it[0], it[1]), Point(it[2], it[3])) }
 
-//input.map { row -> row.map { if(it == 0) "." else it.toString() }.joinToString("") }.forEach { println(it) }
-println(input.filter { it.begin.x == it.end.x || it.begin.y == it.end.y }.calcGrid().flatten().count { it > 1 })
-println(input.calcGrid().flatten().count { it > 1 })
+println(input.filter { it.begin.x == it.end.x || it.begin.y == it.end.y }.countCrossings())
+println(input.countCrossings())
