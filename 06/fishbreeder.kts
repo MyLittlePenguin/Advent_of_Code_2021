@@ -4,9 +4,7 @@ val input = java.io.File("06", "input.txt").readText().trim().split(",").groupin
 var fishswarm = input.entries.map { Fish(it.key.toLong(), it.value.toLong()) }
 
 repeat(256) {
-    fishswarm.forEach {
-        it.state--
-    }
+    fishswarm.forEach { it.state-- }
     fishswarm += fishswarm.filter { it.state == -1L }.map { it.state = 6; Fish(8, it.count) }
     fishswarm = fishswarm.groupBy { it.state }.values.map {
         it.reduce { acc, fish ->
