@@ -2,8 +2,8 @@ import kotlin.math.absoluteValue
 
 val input = java.io.File("07/input.txt").readText().split(",").map { it.toInt() }
 
-fun fac(n: Int): Long = (if(n > 1) fac(n - 1) else 0 ) + n
+tailrec fun sum(n: Int, m: Long = 0): Long = if(n > 1) sum(n - 1, m + n) else m + n
 
 val possibilities = input.sorted().let { it.first() .. it.last() }
-possibilities.map { Pair(it, input.map { crab -> (crab - it).absoluteValue }.sum()) }.sortedBy { it.second }.first().let { println(it) }
-possibilities.map { Pair(it, input.map { crab -> fac((crab - it).absoluteValue) }.sum()) }.sortedBy { it.second }.first().let { println(it) }
+possibilities.map { input.map { crab -> (crab - it).absoluteValue }.sum() }.sorted().first().let { println(it) }
+possibilities.map { input.map { crab -> sum((crab - it).absoluteValue) }.sum() }.sorted().first().let { println(it) }
