@@ -4,47 +4,40 @@ val input = java.io.File("08/input.txt").readLines().map { display ->
 }
 
 input.flatMap { it.slice(10..13) }.groupingBy { it.length }.eachCount()
-    .entries.filter { when(it.key) { 2 , 3, 4, 7 -> true ; else -> false } }.sumOf { it.value }
+    .entries.sumOf { when (it.key) { 2, 3, 4, 7 -> it.value; else -> 0 } }
     .let { println(it) }
 
-val numbers = mutableListOf<Int>()
-for(display in input) {
-    val one = display.first { it.length == 2 }
-    val seven = display.first { it.length == 3 }
-    val four = display.first { it.length == 4 }
-    val eight = display.first { it.length == 7 }
-    
-    var two = ""
-    var three = ""
-    var five = ""
-    var six = ""
-    var nine = ""
-    
+var sum = 0
+for (display in input) {
+    val map = HashMap<Int, String>()
+    map[1] = display.first { it.length == 2 }
+    map[7] = display.first { it.length == 3 }
+    map[4] = display.first { it.length == 4 }
+    map[8] = display.first { it.length == 7 }
+
     display.forEach {
-        val knownSegments = it.count { segment -> seven.contains(segment) || four.contains(segment)}
-        val notInSegmentsOfSeven = it.count { segment -> !seven.contains(segment)}
+        val knownSegments = it.count { segment -> map[7]!!.contains(segment) || map[4]!!.contains(segment) }
+        val notInSegmentsOfSeven = it.count { segment -> !map[7]!!.contains(segment) }
         when {
-            knownSegments == 3 && it.length == 5 -> two = it
-            knownSegments == 5 && it.length == 6 -> nine = it
-            knownSegments == 4 && it.length == 6 && notInSegmentsOfSeven == 4 -> six = it
-    
-            knownSegments == 4 && it.length == 5 && notInSegmentsOfSeven == 2 -> three = it
-            knownSegments == 4 && it.length == 5 && notInSegmentsOfSeven == 3 -> five = it
+            knownSegments == 3 && it.length == 5 -> map[2] = it
+            knownSegments == 5 && it.length == 6 -> map[9] = it
+            knownSegments == 4 && it.length == 6 && notInSegmentsOfSeven == 4 -> map[6] = it
+            knownSegments == 4 && it.length == 6 && notInSegmentsOfSeven == 3 -> map[0] = it
+            knownSegments == 4 && it.length == 5 && notInSegmentsOfSeven == 2 -> map[3] = it
+            knownSegments == 4 && it.length == 5 && notInSegmentsOfSeven == 3 -> map[5] = it
         }
     }
-    
-    display.slice(10 .. 13).map { when(it) {
-        one -> "1"
-        two -> "2"
-        three -> "3"
-        four -> "4"
-        five -> "5"
-        six -> "6"
-        seven -> "7"
-        eight -> "8"
-        nine -> "9"
-        else -> "0"
-    } }.joinToString("").toInt().let { numbers.add(it) }
+
+    display.slice(10..13).map {
+        var result = 0
+        for ((digit, segments) in map) {
+            if (segments == it) {
+                result = digit
+                break
+            }
+        }
+        result
+    }.reduce { acc, i -> acc * 10 + i }.let { sum += it }
 }
 
-println(numbers.sum())
+println(sum)
