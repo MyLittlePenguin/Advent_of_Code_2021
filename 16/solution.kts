@@ -74,10 +74,7 @@ class Parser(private val iterator: CharIterator) {
     }
 
     fun parsePacket(): Packet {
-        // TODO: offset und lastBytes berücksichtigen
         getNextLiteral()
-        //    var offset = oldOffset
-        //    var current = lastBytes.shl(4) or iterator.nextHalfByte()
         val version = (current and 0b111.shl(++offset)) shr offset
 
         current = (current shl 4) or nextHalfByte()
