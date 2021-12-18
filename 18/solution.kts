@@ -12,10 +12,7 @@ data class SnailNum(var value: Int) : Snail {
 }
 
 data class SnailPair(var left: Snail, var right: Snail) : Snail {
-    override fun magnitude(): Long {
-        return this.left.magnitude() * 3 + this.right.magnitude() * 2
-    }
-
+    override fun magnitude() = this.left.magnitude() * 3 + this.right.magnitude() * 2
     override fun toString() = "[${this.left.toString()}, ${this.right.toString()}]"
 }
 
